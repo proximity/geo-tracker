@@ -21,7 +21,7 @@ $(function() {
 
 	function startWatching() {
 		if ( ! window.navigator.geolocation) {
-			$latlng.html('<p>Geolocation is not supported by your browser</p>');
+			$latlng.html('Geolocation is not supported by your browser');
 			return;
 		}
 
@@ -29,7 +29,7 @@ $(function() {
 			var latitude = position.coords.latitude;
 			var longitude = position.coords.longitude;
 
-			$latlng.html('<p><strong>Latitude:</strong> ' + parseFloat(latitude + '').toFixed(3) + ' <strong>Longitude:</strong> ' + parseFloat(longitude + '').toFixed(3) + '</p>');
+			$latlng.html('<strong>Latitude:</strong> ' + parseFloat(latitude + '').toFixed(3) + '&nbsp;&nbsp;&nbsp;<strong>Longitude:</strong> ' + parseFloat(longitude + '').toFixed(3));
 
 			var latlng = new google.maps.LatLng(-41.285093, 174.777487);
 
@@ -38,10 +38,10 @@ $(function() {
 		}
 
 		function error() {
-			$latlng.html('<p>Unable to retrieve location</p>');
+			$latlng.html('Unable to retrieve location');
 		}
 
-		$latlng.html('<p>Locating...</p>');
+		$latlng.html('Locating...');
 		$startBtn.attr('disabled', 'disabled');
 		$stopBtn.removeAttr('disabled');
 
