@@ -5,11 +5,12 @@ $(function() {
 	var $map = $('#map');
 	var $latlng = $('#latlng');
 	var watcher;
+	var tracking_data = [];
 
 	var $startBtn = $('#startWatching').on('click', startWatching);
 	var $stopBtn = $('#stopWatching').on('click', stopWatching);
 
-	var map = new google.maps.Map($map[0], {
+	map = new google.maps.Map($map[0], {
 		zoom: 18,
 		minZoom: 6,
 	});
@@ -18,6 +19,7 @@ $(function() {
 		map: map,
 		flat: true,
 	});
+
 
 	function startWatching() {
 		if ( ! window.navigator.geolocation) {
@@ -31,7 +33,22 @@ $(function() {
 
 			$latlng.html('<strong>Latitude:</strong> ' + parseFloat(latitude + '').toFixed(3) + '&nbsp;&nbsp;&nbsp;<strong>Longitude:</strong> ' + parseFloat(longitude + '').toFixed(3));
 
-			var latlng = new google.maps.LatLng(-41.285093, 174.777487);
+			var latlng = new google.maps.LatLng(latitude, longitude);
+
+			tracking_data.push(position);
+
+			if ( typeof poly == 'undefined' ) {
+				poly = new google.maps.Polyline({
+					strokeColor: "#ff0000",
+					strokeOpacity: 1.0,
+					strokeWeight: 2
+				});
+				poly.setMap(map);
+			}
+
+			var path = poly.getPath().getArray();
+			path.push(latlng);
+			poly.setPath(path);
 
 			map.setCenter(latlng);
 			marker.setPosition(latlng);
@@ -45,7 +62,7 @@ $(function() {
 		$startBtn.attr('disabled', 'disabled');
 		$stopBtn.removeAttr('disabled');
 
-		watcher = navigator.geolocation.watchPosition(success, error);
+		watcher = navigator.geolocation.watchPosition(success, error, {enableHighAccuracy: true});
 	}
 
 	function stopWatching() {

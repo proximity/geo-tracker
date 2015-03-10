@@ -1,1 +1,82 @@
-!function o(e,t,n){function r(a,s){if(!t[a]){if(!e[a]){var l="function"==typeof require&&require;if(!s&&l)return l(a,!0);if(i)return i(a,!0);var d=new Error("Cannot find module '"+a+"'");throw d.code="MODULE_NOT_FOUND",d}var p=t[a]={exports:{}};e[a][0].call(p.exports,function(o){var t=e[a][1][o];return r(t?t:o)},p,p.exports,o,e,t,n)}return t[a].exports}for(var i="function"==typeof require&&require,a=0;a<n.length;a++)r(n[a]);return r}({"./js/main.js":[function(o){o("./app")},{"./app":"/Users/mhipp/Development/geo-tracker/js/app.js"}],"/Users/mhipp/Development/geo-tracker/js/app.js":[function(){(function(o){var e="undefined"!=typeof window?window.$:"undefined"!=typeof o?o.$:null;e(function(){function o(){function o(o){var e=o.coords.latitude,t=o.coords.longitude;a.html("<strong>Latitude:</strong> "+parseFloat(e+"").toFixed(3)+"&nbsp;&nbsp;&nbsp;<strong>Longitude:</strong> "+parseFloat(t+"").toFixed(3));var r=new google.maps.LatLng(-41.285093,174.777487);n.setCenter(r),d.setPosition(r)}function e(){a.html("Unable to retrieve location")}return window.navigator.geolocation?(a.html("Locating..."),s.attr("disabled","disabled"),l.removeAttr("disabled"),void(r=navigator.geolocation.watchPosition(o,e))):void a.html("Geolocation is not supported by your browser")}function t(){navigator.geolocation.clearWatch(r),l.attr("disabled","disabled"),s.removeAttr("disabled")}var n,r,i=e("#map"),a=e("#latlng"),s=e("#startWatching").on("click",o),l=e("#stopWatching").on("click",t),n=new google.maps.Map(i[0],{zoom:18,minZoom:6}),d=new google.maps.Marker({map:n,flat:!0})})}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}]},{},["./js/main.js"]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./js/main.js":[function(require,module,exports){
+var app = require('./app');
+
+},{"./app":"/Users/jghazally/Documents/Node/geo-tracker/js/app.js"}],"/Users/jghazally/Documents/Node/geo-tracker/js/app.js":[function(require,module,exports){
+(function (global){
+var $ = (typeof window !== "undefined" ? window.$ : typeof global !== "undefined" ? global.$ : null);
+
+$(function() {
+	var map;
+	var $map = $('#map');
+	var $latlng = $('#latlng');
+	var watcher;
+	var tracking_data = [];
+
+	var $startBtn = $('#startWatching').on('click', startWatching);
+	var $stopBtn = $('#stopWatching').on('click', stopWatching);
+
+	map = new google.maps.Map($map[0], {
+		zoom: 18,
+		minZoom: 6,
+	});
+
+	var marker = new google.maps.Marker({
+		map: map,
+		flat: true,
+	});
+
+
+	function startWatching() {
+		if ( ! window.navigator.geolocation) {
+			$latlng.html('Geolocation is not supported by your browser');
+			return;
+		}
+
+		function success(position) {
+			var latitude = position.coords.latitude;
+			var longitude = position.coords.longitude;
+
+			$latlng.html('<strong>Latitude:</strong> ' + parseFloat(latitude + '').toFixed(3) + '&nbsp;&nbsp;&nbsp;<strong>Longitude:</strong> ' + parseFloat(longitude + '').toFixed(3));
+
+			var latlng = new google.maps.LatLng(latitude, longitude);
+
+			tracking_data.push(position);
+
+			if ( typeof poly == 'undefined' ) {
+				poly = new google.maps.Polyline({
+					strokeColor: "#ff0000",
+					strokeOpacity: 1.0,
+					strokeWeight: 2
+				});
+				poly.setMap(map);
+			}
+
+			var path = poly.getPath().getArray();
+			path.push(latlng);
+			poly.setPath(path);
+
+			map.setCenter(latlng);
+			marker.setPosition(latlng);
+		}
+
+		function error() {
+			$latlng.html('Unable to retrieve location');
+		}
+
+		$latlng.html('Locating...');
+		$startBtn.attr('disabled', 'disabled');
+		$stopBtn.removeAttr('disabled');
+
+		watcher = navigator.geolocation.watchPosition(success, error, {enableHighAccuracy: true});
+	}
+
+	function stopWatching() {
+		navigator.geolocation.clearWatch(watcher);
+
+		$stopBtn.attr('disabled', 'disabled');
+		$startBtn.removeAttr('disabled');
+	}
+});
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}]},{},["./js/main.js"]);
